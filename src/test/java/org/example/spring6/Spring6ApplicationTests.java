@@ -40,4 +40,17 @@ class ClubActivityWebControllerTests {
 
         assertThat(service.findAll()).hasSize(before + 1);
     }
+    @Test
+    void shouldRedirectAfterCreation() throws Exception {
+        mockMvc.perform(post("/activities")
+                        .param("title", "PRG 테스트")
+                        .param("clubName", "테스트 동아리")
+                        .param("category", "운동")
+                        .param("activityDate", "2026-10-16")
+                        .param("location", "한동대학교")
+                        .param("participants", "10")
+                        .param("description", "PRG 패턴 테스트"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/activities"));
+    }
 }
