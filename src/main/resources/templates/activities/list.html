@@ -4,57 +4,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>동아리 활동 목록</title>
+    <title>활동 관리 | CLUBSPACE</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body class="bg-light">
 
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>동아리 활동 관리</h2>
-        <a th:href="@{/activities/new}" class="btn btn-primary">
-            신규 활동 등록
-        </a>
-    </div>
+<body>
+<div class="app-shell">
 
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>활동명</th>
-                <th>동아리명</th>
-                <th>카테고리</th>
-                <th>날짜</th>
-                <th>장소</th>
-                <th>참여 인원</th>
-                <th>설명</th>
-            </tr>
-            </thead>
+    <!-- Navigation -->
+    <header class="topbar">
+        <div class="container-xl d-flex justify-content-between align-items-center">
+            <a class="brand" th:href="@{/activities}">
+                <span class="brand-icon"><i class="bi bi-grid-1x2-fill"></i></span>
+                CLUBSPACE<span class="brand-dot">.</span>
+            </a>
+            <span class="topbar-label d-none d-sm-inline">
+                <i class="bi bi-layers me-2"></i>Activity Management
+            </span>
+        </div>
+    </header>
 
-            <tbody>
-            <tr th:each="activity : ${activities}">
-                <td th:text="${activity.id}"></td>
-                <td th:text="${activity.title}"></td>
-                <td th:text="${activity.clubName}"></td>
-                <td th:text="${activity.category}"></td>
-                <td th:text="${activity.activityDate}"></td>
-                <td th:text="${activity.location}"></td>
-                <td th:text="${activity.participants}"></td>
-                <td th:text="${activity.description}"></td>
-            </tr>
+    <main class="container-xl page-content">
 
-            <tr th:if="${#lists.isEmpty(activities)}">
-                <td colspan="8" class="text-center">
-                    등록된 활동이 없습니다.
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        <!-- Page heading -->
+        <div class="page-header">
+            <div>
+                <div class="eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    CLUB MANAGEMENT SYSTEM
+                </div>
+                <h1 class="page-title">동아리 활동 관리<span class="title-period">.</span></h1>
+                <p class="page-subtitle">우리 동아리의 모든 활동을 한곳에서 관리하세요.</p>
+            </div>
+
+            <a th:href="@{/activities/new}" class="btn btn-brand">
+                <i class="bi bi-plus-lg me-2"></i>새 활동 등록
+            </a>
+        </div>
+
+        <!-- Overview cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="bi bi-calendar2-check"></i>
+                    </div>
+                    <div class="stat-label">전체 등록 활동</div>
+                    <div class="stat-value" th:text="${#lists.size(activities)}">0</div>
+                    <div class="stat-footer">Total Activities</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-label">전체 참여 인원</div>
+                    <div class="stat-value" id="totalParticipants">0</div>
+                    <div class="stat-footer">Total Participants</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="bi bi-collection"></i>
+                    </div>
+                    <div class="stat-label">등록된 동아리</div>
+                    <div class="stat-value" id="totalClubs">0</div>
+                    <div class="stat-footer">Unique Clubs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity table -->
+        <section class="content-card">
+
+            <div class="content-card-header">
+                <div>
+                    <h2 class="section-title">활동 목록</h2>
+                    <p class="section-description">등록된 동아리 활동 내역을 확인할 수 있습니다.</p>
+                </div>
+
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="search" id="searchInput"
+                           placeholder="활동명, 동아리명 검색..."
+                           aria-label="활동 검색">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table activity-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>활동 정보</th>
+                        <th>카테고리</th>
+                        <th>활동 날짜</th>
+                        <th>장소</th>
+                        <th>참여 인원</th>
+                        <th>설명</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="activityTableBody">
+                    <tr th:each="activity : ${activities}" class="activity-row">
+                        <td>
+                            <span class="id-text" th:text="${'#' + activity.id}">#1</span>
+                        </td>
+
+                        <td>
+                            <div class="activity-name" th:text="${activity.title}">활동명</div>
+                            <div class="activity-club" th:text="${activity.clubName}">동아리명</div>
+                        </td>
+
+                        <td>
+                            <span class="category-badge" th:text="${activity.category}">카테고리</span>
+                        </td>
+
+                        <td>
+                            <span class="cell-with-icon">
+                                <i class="bi bi-calendar3"></i>
+                                <span th:text="${activity.activityDate}">2026-10-15</span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="cell-with-icon">
+                                <i class="bi bi-geo-alt"></i>
+                                <span th:text="${activity.location}">활동 장소</span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="participants-value" th:text="${activity.participants}">0</span>
+                            <span class="unit-text">명</span>
+                        </td>
+
+                        <td>
+                            <span class="description-text"
+                                  th:text="${activity.description}">활동 설명</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state"
+                 id="emptyState"
+                 th:style="${#lists.isEmpty(activities)} ? '' : 'display:none'">
+                <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+                <h3 id="emptyTitle">아직 등록된 활동이 없어요</h3>
+                <p id="emptyMessage">첫 번째 동아리 활동을 등록해 보세요.</p>
+                <a th:href="@{/activities/new}" class="btn btn-brand">
+                    <i class="bi bi-plus-lg me-2"></i>활동 등록하기
+                </a>
+            </div>
+
+            <div class="table-footer">
+                <span>Showing <strong id="visibleCount" th:text="${#lists.size(activities)}">0</strong> activities</span>
+                <span>CLUBSPACE · Activity Dashboard</span>
+            </div>
+
+        </section>
+
+        <footer class="site-footer">
+            © 2026 CLUBSPACE. Built with Spring Boot &amp; Thymeleaf.
+        </footer>
+    </main>
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = [...document.querySelectorAll(".activity-row")];
+        const searchInput = document.getElementById("searchInput");
+        const emptyState = document.getElementById("emptyState");
+        const visibleCount = document.getElementById("visibleCount");
+
+        let totalParticipants = 0;
+        const clubs = new Set();
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+
+            totalParticipants += Number(
+                cells[5].querySelector(".participants-value").textContent.trim()
+            ) || 0;
+
+            clubs.add(
+                cells[1].querySelector(".activity-club").textContent.trim()
+            );
+        });
+
+        document.getElementById("totalParticipants").textContent =
+            totalParticipants.toLocaleString("ko-KR");
+
+        document.getElementById("totalClubs").textContent = clubs.size;
+
+        searchInput.addEventListener("input", function () {
+            const keyword = this.value.trim().toLowerCase();
+            let visible = 0;
+
+            rows.forEach(row => {
+                const title = row.querySelector(".activity-name").textContent.toLowerCase();
+                const club = row.querySelector(".activity-club").textContent.toLowerCase();
+
+                const matched = title.includes(keyword) || club.includes(keyword);
+                row.style.display = matched ? "" : "none";
+
+                if (matched) visible++;
+            });
+
+            visibleCount.textContent = visible;
+            emptyState.style.display = visible === 0 ? "block" : "none";
+
+            if (rows.length > 0) {
+                document.getElementById("emptyTitle").textContent =
+                    "검색 결과가 없습니다";
+                document.getElementById("emptyMessage").textContent =
+                    "다른 검색어를 입력해 보세요.";
+            }
+        });
+    });
+</script>
 </body>
 </html>
