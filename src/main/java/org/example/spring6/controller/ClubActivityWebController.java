@@ -23,16 +23,22 @@ public class ClubActivityWebController {
         return "activities/list";
     }
 
-    // 활동 등록 화면
     @GetMapping("/new")
     public String form() {
         return "activities/form";
     }
 
-    // 활동 등록 처리
     @PostMapping
-    public String create(@ModelAttribute ClubActivityRequest request) {
-        service.create(request);
-        return "redirect:/activities";
+    public String create(@ModelAttribute ClubActivityRequest request,
+                         Model model) {
+        try {
+            service.create(request);
+            return "redirect:/activities";
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("formData", request);
+            return "activities/form";
+        }
     }
 }

@@ -6,20 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>새 활동 등록 | CLUBSPACE</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
 <div class="app-shell">
 
+    <!-- Navigation -->
     <header class="topbar">
         <div class="container-xl d-flex justify-content-between align-items-center">
             <a class="brand" th:href="@{/activities}">
-                <span class="brand-icon"><i class="bi bi-grid-1x2-fill"></i></span>
+                <span class="brand-icon">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                </span>
                 CLUBSPACE<span class="brand-dot">.</span>
             </a>
+
             <span class="topbar-label d-none d-sm-inline">
                 <i class="bi bi-layers me-2"></i>Activity Management
             </span>
@@ -28,142 +34,257 @@
 
     <main class="container-xl page-content">
 
+        <!-- Breadcrumb -->
         <nav class="breadcrumb-nav">
             <a th:href="@{/activities}">활동 관리</a>
             <i class="bi bi-chevron-right"></i>
             <span>새 활동 등록</span>
         </nav>
 
+        <!-- Page Header -->
         <div class="form-page-header">
             <div class="eyebrow">
                 <span class="eyebrow-dot"></span>
                 CREATE NEW ACTIVITY
             </div>
-            <h1 class="page-title">새로운 활동 등록<span class="title-period">.</span></h1>
-            <p class="page-subtitle">새로운 동아리 활동 정보를 입력하고 관리해 보세요.</p>
+
+            <h1 class="page-title">
+                새로운 활동 등록<span class="title-period">.</span>
+            </h1>
+
+            <p class="page-subtitle">
+                새로운 동아리 활동 정보를 입력하고 관리해 보세요.
+            </p>
         </div>
 
         <div class="row g-4 align-items-start">
 
-            <!-- Form -->
+            <!-- Registration Form -->
             <div class="col-lg-8">
                 <section class="content-card form-card">
 
                     <div class="form-section-heading">
-                        <div class="section-icon"><i class="bi bi-pencil-square"></i></div>
+                        <div class="section-icon">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+
                         <div>
                             <h2 class="section-title">활동 기본 정보</h2>
                             <p class="section-description">
-                                <span class="required">*</span> 표시는 필수 입력 항목입니다.
+                                <span class="required">*</span>
+                                표시는 필수 입력 항목입니다.
                             </p>
                         </div>
                     </div>
 
+                    <!-- Error Message -->
+                    <div th:if="${errorMessage}"
+                         class="alert alert-danger d-flex align-items-start mb-4"
+                         role="alert">
+
+                        <i class="bi bi-exclamation-circle-fill me-3"></i>
+
+                        <div>
+                            <strong class="d-block mb-1">
+                                활동 등록에 실패했습니다.
+                            </strong>
+                            <span th:text="${errorMessage}">
+                                입력 내용을 확인해 주세요.
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- HTML Form -->
                     <form th:action="@{/activities}" method="post">
 
                         <div class="row g-4">
 
+                            <!-- Title -->
                             <div class="col-12">
                                 <label for="title" class="form-label-custom">
                                     활동명 <span class="required">*</span>
                                 </label>
-                                <input type="text" id="title" name="title"
+
+                                <input type="text"
+                                       id="title"
+                                       name="title"
                                        class="form-control form-control-modern"
+                                       th:value="${formData != null ? formData.title : ''}"
                                        placeholder="예: 가을 정기 러닝"
-                                       maxlength="100" required>
+                                       maxlength="100"
+                                       required>
                             </div>
 
+                            <!-- Club Name -->
                             <div class="col-md-6">
                                 <label for="clubName" class="form-label-custom">
                                     동아리명 <span class="required">*</span>
                                 </label>
-                                <input type="text" id="clubName" name="clubName"
+
+                                <input type="text"
+                                       id="clubName"
+                                       name="clubName"
                                        class="form-control form-control-modern"
-                                       placeholder="예: 한동 러닝 동아리" required>
+                                       th:value="${formData != null ? formData.clubName : ''}"
+                                       placeholder="예: 한동 러닝 동아리"
+                                       required>
                             </div>
 
+                            <!-- Category -->
                             <div class="col-md-6">
                                 <label for="category" class="form-label-custom">
                                     카테고리 <span class="required">*</span>
                                 </label>
-                                <select id="category" name="category"
-                                        class="form-select form-control-modern" required>
-                                    <option value="" selected disabled>카테고리를 선택하세요</option>
-                                    <option value="운동">운동</option>
-                                    <option value="학술">학술</option>
-                                    <option value="문화">문화</option>
-                                    <option value="봉사">봉사</option>
-                                    <option value="친목">친목</option>
-                                    <option value="기타">기타</option>
+
+                                <select id="category"
+                                        name="category"
+                                        class="form-select form-control-modern"
+                                        required>
+
+                                    <option value="" disabled
+                                            th:selected="${formData == null || formData.category == null || formData.category == ''}">
+                                        카테고리를 선택하세요
+                                    </option>
+
+                                    <option value="운동"
+                                            th:selected="${formData != null && formData.category == '운동'}">
+                                        운동
+                                    </option>
+
+                                    <option value="학술"
+                                            th:selected="${formData != null && formData.category == '학술'}">
+                                        학술
+                                    </option>
+
+                                    <option value="문화"
+                                            th:selected="${formData != null && formData.category == '문화'}">
+                                        문화
+                                    </option>
+
+                                    <option value="봉사"
+                                            th:selected="${formData != null && formData.category == '봉사'}">
+                                        봉사
+                                    </option>
+
+                                    <option value="친목"
+                                            th:selected="${formData != null && formData.category == '친목'}">
+                                        친목
+                                    </option>
+
+                                    <option value="기타"
+                                            th:selected="${formData != null && formData.category == '기타'}">
+                                        기타
+                                    </option>
                                 </select>
                             </div>
 
+                            <!-- Date -->
                             <div class="col-md-6">
                                 <label for="activityDate" class="form-label-custom">
                                     활동 날짜 <span class="required">*</span>
                                 </label>
-                                <input type="date" id="activityDate" name="activityDate"
-                                       class="form-control form-control-modern" required>
+
+                                <input type="date"
+                                       id="activityDate"
+                                       name="activityDate"
+                                       class="form-control form-control-modern"
+                                       th:value="${formData != null ? formData.activityDate : ''}"
+                                       required>
                             </div>
 
+                            <!-- Participants -->
                             <div class="col-md-6">
                                 <label for="participants" class="form-label-custom">
                                     참여 인원 <span class="required">*</span>
                                 </label>
+
                                 <div class="input-group">
-                                    <input type="number" id="participants" name="participants"
+                                    <input type="number"
+                                           id="participants"
+                                           name="participants"
                                            class="form-control form-control-modern"
-                                           placeholder="예: 15" min="1" required>
-                                    <span class="input-group-text input-suffix">명</span>
+                                           th:value="${formData != null ? formData.participants : ''}"
+                                           placeholder="예: 15"
+                                           min="1"
+                                           required>
+
+                                    <span class="input-group-text input-suffix">
+                                        명
+                                    </span>
                                 </div>
                             </div>
 
+                            <!-- Location -->
                             <div class="col-12">
                                 <label for="location" class="form-label-custom">
                                     활동 장소 <span class="required">*</span>
                                 </label>
+
                                 <div class="input-icon-wrap">
                                     <i class="bi bi-geo-alt"></i>
-                                    <input type="text" id="location" name="location"
+
+                                    <input type="text"
+                                           id="location"
+                                           name="location"
                                            class="form-control form-control-modern"
-                                           placeholder="예: 영일대 해수욕장" required>
+                                           th:value="${formData != null ? formData.location : ''}"
+                                           placeholder="예: 영일대 해수욕장"
+                                           required>
                                 </div>
                             </div>
 
+                            <!-- Description -->
                             <div class="col-12">
                                 <label for="description" class="form-label-custom">
                                     활동 설명 <span class="required">*</span>
                                 </label>
-                                <textarea id="description" name="description"
+
+                                <textarea id="description"
+                                          name="description"
                                           class="form-control form-control-modern"
                                           rows="5"
                                           placeholder="활동의 목적과 주요 내용을 자유롭게 작성해 주세요."
+                                          th:text="${formData != null ? formData.description : ''}"
                                           required></textarea>
-                                <div class="form-helper">활동을 구체적으로 설명하면 관리하기 편리합니다.</div>
+
+                                <div class="form-helper">
+                                    활동을 구체적으로 설명하면 관리하기 편리합니다.
+                                </div>
                             </div>
 
                         </div>
 
+                        <!-- Form Actions -->
                         <div class="form-actions">
+
                             <a th:href="@{/activities}" class="btn btn-back">
-                                <i class="bi bi-arrow-left me-2"></i>목록으로 돌아가기
+                                <i class="bi bi-arrow-left me-2"></i>
+                                목록으로 돌아가기
                             </a>
 
                             <button type="submit" class="btn btn-brand">
-                                <i class="bi bi-check2-circle me-2"></i>활동 등록하기
+                                <i class="bi bi-check2-circle me-2"></i>
+                                활동 등록하기
                             </button>
-                        </div>
 
+                        </div>
                     </form>
                 </section>
             </div>
 
-            <!-- Side information -->
+            <!-- Side Guide -->
             <div class="col-lg-4">
+
                 <div class="guide-card">
-                    <div class="guide-icon"><i class="bi bi-lightbulb"></i></div>
+                    <div class="guide-icon">
+                        <i class="bi bi-lightbulb"></i>
+                    </div>
+
                     <h3>활동 등록 가이드</h3>
-                    <p>동아리 활동을 체계적으로 관리하기 위한 첫 단계입니다.</p>
+
+                    <p>
+                        동아리 활동을 체계적으로 관리하기 위한 첫 단계입니다.
+                    </p>
 
                     <div class="guide-divider"></div>
 
@@ -192,16 +313,22 @@
                     </div>
                 </div>
 
+                <!-- Memory Storage Notice -->
                 <div class="info-note">
                     <i class="bi bi-info-circle"></i>
-                    <span>현재 데이터는 메모리에 저장되어 서버 재시작 시 초기화됩니다.</span>
+                    <span>
+                        현재 데이터는 메모리에 저장되어 서버 재시작 시 초기화됩니다.
+                    </span>
                 </div>
+
             </div>
         </div>
 
+        <!-- Footer -->
         <footer class="site-footer">
             © 2026 CLUBSPACE. Built with Spring Boot &amp; Thymeleaf.
         </footer>
+
     </main>
 </div>
 </body>
